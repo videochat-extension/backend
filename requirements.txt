@@ -1,0 +1,4 @@
+dico-api
+aioschedule
+httpx
+sanic[ext]
