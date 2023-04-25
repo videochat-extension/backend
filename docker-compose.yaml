@@ -1,18 +1,20 @@
-version: "3.8"
+version: "3.3"
 
 services:
-  stats-monitor:
+  backend:
     build:
       context: .
     restart: unless-stopped
     ports:
-      - "47977:8000"
+      - "443:8000"
     env_file:
-      - prod.env
+      - .env
     logging:
       options:
         max-size: '1m'
         max-file: '10'
       driver: json-file
+    entrypoint: "uvicorn backend.asgi:application --host 0.0.0.0 --ssl-certfile certs/cert.pem --ssl-keyfile certs/key.pem"
     volumes:
+      - ./backend:/root
       - ./certs:/root/certs

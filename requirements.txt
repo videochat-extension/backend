@@ -1,4 +1,6 @@
 dico-api
 aioschedule
 httpx
-sanic[ext]
+adrf
+uvicorn
+python-dotenv
