@@ -14,7 +14,7 @@ services:
         max-size: '1m'
         max-file: '10'
       driver: json-file
-    entrypoint: "uvicorn backend.asgi:application --host 0.0.0.0 --ssl-certfile certs/cert.pem --ssl-keyfile certs/key.pem"
+    entrypoint: "uvicorn backend.asgi:application --host 0.0.0.0 --ssl-certfile certs/cert.pem --ssl-keyfile certs/key.pem --no-access-log"
     volumes:
       - ./backend:/root
       - ./certs:/root/certs
