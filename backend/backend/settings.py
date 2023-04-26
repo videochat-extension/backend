@@ -28,9 +28,9 @@ except Exception:
 SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = [ "api-videochat-extension.starbase.wiki" ]
+ALLOWED_HOSTS = [ "ve-api.starbase.wiki" ]
 
 # Application definition
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'rest_framework',
     'adrf',
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -157,6 +159,16 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+#django-cors-headers
+CORS_ALLOWED_ORIGINS = [
+    'chrome-extension://alchldmijhnnapijdmchpkdeikibjgoi',
+    'chrome-extension://jdpiggacibaaecfbegkhakcmgaafjajn',
+    'moz-extension://e6bfaa88-4a9c-4a65-bdf1-094d64b11343',
+]
+
+if DEBUG or os.getenv('CORS_ALLOW_ALL_ORIGINS') == "True":
+    CORS_ALLOW_ALL_ORIGINS = True
 
 #api
 IPAPI_CACHE_DURATION = int(os.environ["IPAPI_CACHE_DURATION"])
