@@ -3,7 +3,7 @@ from rest_framework.throttling import AnonRateThrottle
 
 class GeoRateThrottle(AnonRateThrottle):
     scope = 'geolocation'
-    rate = '6/min'
+    rate = '90/min'
 
 
 class GetUsersRateThrottle(AnonRateThrottle):
