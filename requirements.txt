@@ -1,6 +1,9 @@
-dico-api
+django
+djangorestframework
+adrf
+django-cors-headers
+python-dotenv
+uvicorn
 aioschedule
 httpx
-adrf
-uvicorn
-python-dotenv
+dico-api
