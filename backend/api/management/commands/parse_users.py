@@ -71,7 +71,7 @@ async def update():
         final_report = f"ALL: {old_sum} -> {new_sum} ({new_sum - old_sum:+}). {report}"
         await report_channel.create_message(final_report)
 
-        await caches["users-count"].aset("user-count", new_sum)
+        await caches["users-count"].aset("user-count", new_sum, None)
 
         status_channel = await api.request_channel(settings.DISCORD_CHANNEL_STATUS)
         await status_channel.edit(name=f"Weekly Users: {new_sum:,}".replace(',', '.'))
