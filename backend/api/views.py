@@ -30,7 +30,7 @@ async def geo(request):
     cached = await cache.aget(cache_key)
 
     if cached:
-        return Response({"result": cached})
+        return Response(cached)
     else:
         r = await request_ip_data(valid.validated_data['ip'], valid.validated_data['lang'])
         if r.status_code == httpx.codes.OK:
