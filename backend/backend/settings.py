@@ -165,6 +165,7 @@ CORS_ALLOWED_ORIGINS = [
     'chrome-extension://alchldmijhnnapijdmchpkdeikibjgoi',
     'chrome-extension://jdpiggacibaaecfbegkhakcmgaafjajn',
     'moz-extension://e6bfaa88-4a9c-4a65-bdf1-094d64b11343',
+    'https://videochat-extension.starbase.wiki'
 ]
 
 if DEBUG or os.getenv('CORS_ALLOW_ALL_ORIGINS') == "True":
