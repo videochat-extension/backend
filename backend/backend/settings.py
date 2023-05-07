@@ -173,6 +173,7 @@ if DEBUG or os.getenv('CORS_ALLOW_ALL_ORIGINS') == "True":
 
 #api
 IPAPI_CACHE_DURATION = int(os.environ["IPAPI_CACHE_DURATION"])
+IPAPI_KEY = str(os.environ["IPAPI_KEY"])
 
 # parse_user.py
 DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]

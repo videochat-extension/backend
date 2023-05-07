@@ -16,7 +16,7 @@ from .throttle import GeoRateThrottle, GetUsersRateThrottle
 
 async def request_ip_data(ip: ipaddress.IPv4Address | ipaddress.IPv6Address, lang: str):
     async with httpx.AsyncClient() as client:
-        r = await client.get(f"http://ip-api.com/json/{ip}?fields=17032159&lang={lang}")
+        r = await client.get(f"https://pro.ip-api.com/json/{ip}?fields=17032159&key={settings.IPAPI_KEY}&lang={lang}")
         return r
 
 
