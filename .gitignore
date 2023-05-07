@@ -1,2 +1,4 @@
-prod.env
+.env
 certs
+.idea
+env

@@ -1,0 +1,2 @@
+uvicorn backend.asgi:application
+

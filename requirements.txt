@@ -1,4 +1,9 @@
-dico-api
+django
+djangorestframework
+adrf
+django-cors-headers
+python-dotenv
+uvicorn
 aioschedule
 httpx
-sanic[ext]
+dico-api
