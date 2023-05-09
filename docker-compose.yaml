@@ -9,12 +9,36 @@ services:
       - "443:8000"
     env_file:
       - .env
+    labels:
+      "autoheal": "true"
     logging:
       options:
         max-size: '1m'
         max-file: '10'
       driver: json-file
     entrypoint: "/bin/sh /root/prod.sh"
+    healthcheck:
+      test: "/usr/local/bin/python /root/panica.py"
+      interval: 1m
+      timeout: 10s
+      retries: 2
     volumes:
       - ./backend:/root
       - ./certs:/root/certs
+    depends_on:
+      - cache
+  cache:
+   image: memcached
+   entrypoint:
+    - memcached
+    - -m 1024
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    environment:
+      - AUTOHEAL_INTERVAL=60
+      - AUTOHEAL_START_PERIOD=60
+      - AUTOHEAL_DEFAULT_STOP_TIMEOUT=30
+      - CURL_TIMEOUT=30
