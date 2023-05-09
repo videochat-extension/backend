@@ -1,2 +1,1 @@
-uvicorn backend.asgi:application --host 0.0.0.0 --ssl-certfile certs/cert.pem --ssl-keyfile certs/key.pem --no-access-log & python3 manage.py parse_users
-
+gunicorn backend.asgi:application --bind 0.0.0.0 -w 5 -k uvicorn.workers.UvicornWorker --certfile certs/cert.pem --keyfile certs/key.pem --disable-redirect-access-to-syslog & python3 manage.py parse_users

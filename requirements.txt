@@ -3,6 +3,8 @@ djangorestframework
 adrf
 django-cors-headers
 python-dotenv
+pymemcache
+gunicorn
 uvicorn
 aioschedule
 httpx
