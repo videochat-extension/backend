@@ -1,11 +1,13 @@
 import requests
 import time
-import random
-import socket
 import sys
-import struct
+import faker
 
-ip = socket.inet_ntoa(struct.pack('>I', random.randint(1, 0xffffffff)))
+
+from faker import Faker
+fake = Faker()
+
+ip = fake.ipv4_public()
 try:
     r = requests.get(f'https://ve-api.starbase.wiki/geo?ip={ip}&lang=en')
 except Exception as E:

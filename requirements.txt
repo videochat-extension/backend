@@ -9,3 +9,4 @@ uvicorn
 aioschedule
 httpx
 dico-api
+faker
