@@ -9,3 +9,8 @@ class GeoRateThrottle(AnonRateThrottle):
 class GetUsersRateThrottle(AnonRateThrottle):
     scope = 'users'
     rate = '20/min'
+
+class BugReportRateThrottle(AnonRateThrottle):
+    scope = 'report-bug'
+    rate = '10/min'
+

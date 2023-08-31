@@ -10,3 +10,4 @@ aioschedule
 httpx
 dico-api
 faker
+githubkit[auth-app]

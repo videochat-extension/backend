@@ -196,3 +196,10 @@ PARSE_USERS = {
 }
 
 PARSE_USERS_FREQUENCY = int(os.environ["PARSE_USERS_FREQUENCY"])
+
+GH_APP_ID = os.environ["GH_APP_ID"]
+with open(os.environ["GH_PR_PATH"]) as key:
+    GH_PR_KEY = key.read()
+GH_INSTL_ID = os.environ["GH_INSTL_ID"]
+GH_SECRET = os.environ["GH_SECRET"]
+

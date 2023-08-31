@@ -6,18 +6,22 @@ import httpx
 from adrf.decorators import api_view
 from django.conf import settings
 from django.core.cache import cache, caches
+from githubkit import GitHub, AppInstallationAuthStrategy
 from rest_framework import status
 from rest_framework.decorators import throttle_classes
 from rest_framework.response import Response
 
-from .serializers import GeoRequestSerializer
-from .throttle import GeoRateThrottle, GetUsersRateThrottle
+from .serializers import GeoRequestSerializer, BugReportSerializer
+from .throttle import GeoRateThrottle, GetUsersRateThrottle, BugReportRateThrottle
 
 
 async def request_ip_data(ip: ipaddress.IPv4Address | ipaddress.IPv6Address, lang: str):
     async with httpx.AsyncClient() as client:
         r = await client.get(f"https://pro.ip-api.com/json/{ip}?fields=17032159&key={settings.IPAPI_KEY}&lang={lang}")
         return r
+
+
+github = GitHub(AppInstallationAuthStrategy(settings.GH_APP_ID, settings.GH_PR_KEY, settings.GH_INSTL_ID))
 
 
 @api_view(['GET'])
@@ -52,3 +56,21 @@ async def get_users(request):
         user_count = f"{user_count:,}".replace(',', '.')
 
     return Response({"users": user_count})
+
+
+@api_view(['POST'])
+@throttle_classes([BugReportRateThrottle])
+async def submit_bug(request):
+    valid = BugReportSerializer(data=request.data)
+    valid.is_valid(raise_exception=True)
+
+    await github.rest.issues.async_create(owner='videochat-extension', repo='videochat-extension',
+                                          data={
+                                              'title': valid.validated_data['title'],
+                                              "body": valid.validated_data['details'],
+                                              'assignee': 'qrlk',
+                                              'milestone': 1,
+                                              'labels': ['google-form']
+                                          })
+
+    return Response('ok')
