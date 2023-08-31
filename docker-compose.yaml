@@ -29,9 +29,11 @@ services:
       - cache
   cache:
    image: memcached
+   labels:
+       "autoheal": "true"
    entrypoint:
     - memcached
-    - -m 1024
+    - -m 3072
   autoheal:
     image: willfarrell/autoheal
     container_name: autoheal
