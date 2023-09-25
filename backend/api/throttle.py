@@ -1,5 +1,9 @@
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
+
+class PatronRateThrottle(UserRateThrottle):
+    scope = 'patron-geolocation'
+    rate = '180/min'
 
 class GeoRateThrottle(AnonRateThrottle):
     scope = 'geolocation'

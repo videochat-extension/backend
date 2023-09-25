@@ -11,3 +11,5 @@ httpx
 dico-api
 faker
 githubkit[auth-app]
+django-oauth-toolkit
+django-allauth

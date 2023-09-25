@@ -28,23 +28,34 @@ except Exception:
 SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = [ "ve-api.starbase.wiki" ]
+ALLOWED_HOSTS = [ "ve-api.starbase.wiki", '127.0.0.1' ]
 
 # Application definition
 
 INSTALLED_APPS = [
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.sites',
     'corsheaders',
     'rest_framework',
     'adrf',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    # ... include the providers you want to enable:
+    'allauth.socialaccount.providers.patreon',
+
+    'users',
+    'oauth2_provider',
 
     'api',
 ]
@@ -65,7 +76,9 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, "templates")
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +86,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # `allauth` needs this from django
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -131,12 +147,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': 'cache:11211',
+        #"BACKEND": "django.core.cache.backends.dummy.DummyCache",
+         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+         'LOCATION': 'cache:11211',
     },
     'users-count': {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "user-count",
+    },
+    'bdc-cache': {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "bdc-cache",
+    },
+    'patrons': {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "patrons",
     }
 }
 
@@ -175,6 +200,9 @@ if DEBUG or os.getenv('CORS_ALLOW_ALL_ORIGINS') == "True":
 #api
 IPAPI_CACHE_DURATION = int(os.environ["IPAPI_CACHE_DURATION"])
 IPAPI_KEY = str(os.environ["IPAPI_KEY"])
+BDC_KEY=str(os.environ["BDC_KEY"])
+BDC_CACHE_DURATION = int(os.environ["BDC_CACHE_DURATION"])
+BDC_CACHE_TOUCH_DURATION = int(os.environ["BDC_CACHE_TOUCH_DURATION"])
 
 # parse_user.py
 DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
@@ -203,3 +231,45 @@ with open(os.environ["GH_PR_PATH"]) as key:
 GH_INSTL_ID = os.environ["GH_INSTL_ID"]
 GH_SECRET = os.environ["GH_SECRET"]
 
+# custom user model
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_URL = '/accounts/patreon/login/?process=login'
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+SITE_ID = 1
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'patreon': {
+        'VERSION': 'v2',
+        'SCOPE': ['identity'],
+    }
+}
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_STORE_TOKENS = True
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'api': 'videochat extension api'
+    },
+    'ACCESS_TOKEN_EXPIRE_SECONDS': int(os.environ["ACCESS_TOKEN_EXPIRE_SECONDS"])
+}
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+CANNY_API_KEY = os.environ["CANNY_API_KEY"]
+CANNY_DISCORD_WEBHOOK = os.environ["CANNY_DISCORD_WEBHOOK"]
+
+PATREON_CAMPAIGN_ID = os.environ["PATREON_CAMPAIGN_ID"]
+PATREON_ACCESS_TOKEN = os.environ["PATREON_ACCESS_TOKEN"]
+PATREON_WEBHOOK_SECRET = os.environ["PATREON_WEBHOOK_SECRET"]
+WEBHOOK_REPORT = os.environ["WEBHOOK_REPORT"]
+PARSE_PATRONS_FREQUENCY_MINUTES = int(os.environ["PARSE_PATRONS_FREQUENCY_MINUTES"])
