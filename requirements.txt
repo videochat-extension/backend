@@ -6,7 +6,7 @@ python-dotenv
 pymemcache
 gunicorn
 uvicorn
-aioschedule
+schedule
 httpx
 dico-api
 faker

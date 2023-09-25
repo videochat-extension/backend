@@ -1,10 +1,10 @@
 # parse_users.py
-import asyncio
+import time
 import functools
 import logging
 import re
 
-import aioschedule as schedule
+import schedule
 import dico
 import httpx
 from django.conf import settings
@@ -31,9 +31,9 @@ def catch_exceptions():
     return catch_exceptions_decorator
 
 
-async def parse_users(url, regex):
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(url)
+def parse_users(url, regex):
+    with httpx.Client() as client:
+        resp = client.get(url)
         if resp.status_code == 200:
             users = re.search(regex, resp.text).group(1).replace(',', '')
             users = int(users)
@@ -43,14 +43,14 @@ async def parse_users(url, regex):
 
 
 @catch_exceptions()
-async def update():
-    api = dico.Client(settings.DISCORD_BOT_TOKEN, base=dico.AsyncHTTPRequest)
+def update():
+    api = dico.APIClient(settings.DISCORD_BOT_TOKEN, base=dico.HTTPRequest)
     logger.info("begin task")
 
     new = {i: -1 for i in settings.PARSE_USERS.keys()}
 
     for k, v in settings.PARSE_USERS.items():
-        new[k] = await parse_users(v.get('url'), v.get('regex'))
+        new[k] = parse_users(v.get('url'), v.get('regex'))
         logger.info(f"{k}: {new[k]} ({new[k] - old[k]:+})")
 
     need_to_report = False
@@ -67,23 +67,23 @@ async def update():
         for key in old.keys():
             old[key] = new[key]
 
-        report_channel = await api.request_channel(settings.DISCORD_CHANNEL_REPORT)
+        report_channel = api.request_channel(settings.DISCORD_CHANNEL_REPORT)
         final_report = f"ALL: {old_sum} -> {new_sum} ({new_sum - old_sum:+}). {report}"
-        await report_channel.create_message(final_report)
+        report_channel.create_message(final_report)
 
-        await caches["users-count"].aset("user-count", new_sum, None)
+        caches["users-count"].set("user-count", new_sum, None)
 
-        status_channel = await api.request_channel(settings.DISCORD_CHANNEL_STATUS)
-        await status_channel.edit(name=f"Weekly Users: {new_sum:,}".replace(',', '.'))
+        status_channel = api.request_channel(settings.DISCORD_CHANNEL_STATUS)
+        status_channel.edit(name=f"Weekly Users: {new_sum:,}".replace(',', '.'))
 
     logger.info("end task")
 
 
-async def background():
-    await schedule.run_all()
+def background():
+    schedule.run_all()
     while True:
-        await asyncio.sleep(60)
-        await schedule.run_pending()
+        time.sleep(60)
+        schedule.run_pending()
 
 
 class Command(BaseCommand):
@@ -94,5 +94,4 @@ class Command(BaseCommand):
 
         schedule.every(settings.PARSE_USERS_FREQUENCY).hours.do(update)
 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(background())
+        background()
